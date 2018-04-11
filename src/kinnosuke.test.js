@@ -1,5 +1,6 @@
-import sum from './kinnosuke';
+import Kinnosuke from './kinnosuke';
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(sum(1, 2)).toBe(3);
+test('default baseUrl', () => {
+  const client = new Kinnosuke('foo', 'bar', 'password');
+  expect(client.baseUrl).toBe('https://www.4628.jp');
 });
