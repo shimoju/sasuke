@@ -22,7 +22,8 @@ export default class Kinnosuke {
   }
 
   async getTimeSheet() {
-    const doc = await this.getWithLogin('/?module=timesheet&action=browse');
+    const response = await this.getWithLogin('/?module=timesheet&action=browse');
+    const doc = (new JSDOM(response.data)).window.document;
     const table = doc.getElementById('total_list0');
 
     return table;
@@ -33,12 +34,12 @@ export default class Kinnosuke {
     const loginButtonId = 'id_passlogin';
 
     if (firstTry.data.includes(loginButtonId)) {
-      const login = await this.login();
+      await this.login();
       const retry = await this.http.get(path);
 
-      return (new JSDOM(retry.data)).window.document;
+      return retry;
     } else {
-      return (new JSDOM(firstTry.data)).window.document;
+      return firstTry;
     }
   }
 
