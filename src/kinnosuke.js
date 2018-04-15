@@ -44,8 +44,13 @@ export default class Kinnosuke {
 
   async login() {
     const response = await this.http.post('/', this.loginParams());
+    const loginButtonId = 'id_passlogin';
 
-    return response;
+    if (response.data.includes(loginButtonId)) {
+      return Promise.reject(new Error('Incorrect login id or password'));
+    } else {
+      return response;
+    }
   }
 
   loginParams() {
