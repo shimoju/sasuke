@@ -21,14 +21,6 @@ export default class Kinnosuke {
     axiosCookieJarSupport(this.http);
   }
 
-  async getTimeSheet() {
-    const response = await this.getWithLogin('/?module=timesheet&action=browse');
-    const doc = (new JSDOM(response.data)).window.document;
-    const table = doc.getElementById('total_list0');
-
-    return table;
-  }
-
   async getWithLogin(path) {
     const firstTry = await this.http.get(path);
     const loginButtonId = 'id_passlogin';
