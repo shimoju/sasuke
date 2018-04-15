@@ -96,9 +96,9 @@ describe('#login', () => {
       expect.assertions(2);
       mock.onPost('/').reply(200, '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">', mockHeaders);
 
-      const response = await client.login().catch(err => {
-        expect(err.name).toBe('Error');
-        expect(err.message).toBe('Incorrect login id or password');
+      const response = await client.login().catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Incorrect login id or password');
       });
     });
   });
