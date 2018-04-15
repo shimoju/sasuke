@@ -1,8 +1,8 @@
 import axios from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
-// import { JSDOM } from 'jsdom';
 import { URLSearchParams } from 'url';
+import { JSDOM } from 'jsdom';
 
 const LOGIN_BUTTON_ID = 'id_passlogin';
 
@@ -21,6 +21,16 @@ export default class Kinnosuke {
       withCredentials: true,
     });
     axiosCookieJarSupport(this.http);
+  }
+
+  async getTimeSheet() {
+    const response = await this.getWithLogin(
+      '/?module=timesheet&action=browse'
+    );
+    const doc = new JSDOM(response.data).window.document;
+    const table = doc.getElementById('total_list0');
+
+    return table;
   }
 
   async getWithLogin(path) {
