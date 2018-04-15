@@ -24,6 +24,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "axios-cookiejar-support": "^0.3.5",
+    "jsdom": "^11.7.0",
     "tough-cookie": "^2.3.4"
   }
 }
