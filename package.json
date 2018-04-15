@@ -20,7 +20,8 @@
     "axios-mock-adapter": "^1.15.0",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "jest": "^22.4.3"
+    "jest": "^22.4.3",
+    "prettier": "^1.12.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
