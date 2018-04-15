@@ -39,15 +39,13 @@ describe('#getWithLogin', () => {
           200,
           '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">',
           mockHeaders
-        );
-      mock
+        )
         .onGet('/?module=timesheet&action=browse')
         .reply(
           200,
           '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
           mockHeaders
-        );
-      mock
+        )
         .onPost('/')
         .reply(
           200,
