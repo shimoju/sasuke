@@ -84,7 +84,7 @@ describe('#login', () => {
       expect.assertions(2);
       mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
 
-      const firstTry = await client.login();
+      await client.login();
       const retry = await client.login();
       expect(retry.status).toBe(200);
       expect(retry.data).not.toMatch('id_passlogin');
