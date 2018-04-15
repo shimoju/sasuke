@@ -56,4 +56,4 @@ export default class Kinnosuke {
 
     return params.toString();
   }
-};
+}

@@ -33,19 +33,31 @@ describe('#getWithLogin', () => {
   describe('ログインしていないとき', () => {
     test('ログインした上で指定されたパスのレスポンスを返す', async () => {
       expect.assertions(2);
-      mock.onGet('/?module=timesheet&action=browse').replyOnce(
-        200,
-        '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">',
-        mockHeaders
-      );
-      mock.onGet('/?module=timesheet&action=browse').reply(
-        200,
-        '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
-        mockHeaders
-      );
-      mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
+      mock
+        .onGet('/?module=timesheet&action=browse')
+        .replyOnce(
+          200,
+          '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">',
+          mockHeaders
+        );
+      mock
+        .onGet('/?module=timesheet&action=browse')
+        .reply(
+          200,
+          '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
+          mockHeaders
+        );
+      mock
+        .onPost('/')
+        .reply(
+          200,
+          '<div id="main_header_top">トップページ</div>',
+          mockHeaders
+        );
 
-      const response = await client.getWithLogin('/?module=timesheet&action=browse');
+      const response = await client.getWithLogin(
+        '/?module=timesheet&action=browse'
+      );
       expect(response.status).toBe(200);
       expect(response.data).toMatch('total_list0');
     });
@@ -54,13 +66,17 @@ describe('#getWithLogin', () => {
   describe('ログインしているとき', () => {
     test('そのままレスポンスを返す', async () => {
       expect.assertions(2);
-      mock.onGet('/?module=timesheet&action=browse').reply(
-        200,
-        '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
-        mockHeaders
-      );
+      mock
+        .onGet('/?module=timesheet&action=browse')
+        .reply(
+          200,
+          '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
+          mockHeaders
+        );
 
-      const response = await client.getWithLogin('/?module=timesheet&action=browse');
+      const response = await client.getWithLogin(
+        '/?module=timesheet&action=browse'
+      );
       expect(response.status).toBe(200);
       expect(response.data).toMatch('total_list0');
     });
@@ -71,7 +87,13 @@ describe('#login', () => {
   describe('ログインしていないとき', () => {
     test('ログインする', async () => {
       expect.assertions(2);
-      mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
+      mock
+        .onPost('/')
+        .reply(
+          200,
+          '<div id="main_header_top">トップページ</div>',
+          mockHeaders
+        );
 
       const response = await client.login();
       expect(response.status).toBe(200);
@@ -82,7 +104,13 @@ describe('#login', () => {
   describe('既にログインしているとき', () => {
     test('問題なくログイン状態でレスポンスが返る', async () => {
       expect.assertions(2);
-      mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
+      mock
+        .onPost('/')
+        .reply(
+          200,
+          '<div id="main_header_top">トップページ</div>',
+          mockHeaders
+        );
 
       await client.login();
       const retry = await client.login();
@@ -94,7 +122,13 @@ describe('#login', () => {
   describe('ID・パスワードが正しくないとき', () => {
     test('エラーを返す', async () => {
       expect.assertions(2);
-      mock.onPost('/').reply(200, '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">', mockHeaders);
+      mock
+        .onPost('/')
+        .reply(
+          200,
+          '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">',
+          mockHeaders
+        );
 
       const response = await client.login().catch(error => {
         expect(error.name).toBe('Error');
@@ -106,6 +140,8 @@ describe('#login', () => {
 
 describe('#loginParams', () => {
   test('ログインに必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
-    expect(client.loginParams()).toBe('module=login&y_companycd=foo&y_logincd=bar&password=p%40ssw0rd');
+    expect(client.loginParams()).toBe(
+      'module=login&y_companycd=foo&y_logincd=bar&password=p%40ssw0rd'
+    );
   });
 });
