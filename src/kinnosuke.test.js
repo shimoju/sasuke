@@ -1,9 +1,14 @@
 import Kinnosuke from './kinnosuke';
+import MockAdapter from 'axios-mock-adapter';
 
 let client;
+let mock;
+// set-cookieヘッダがundefinedだとaxios-cookiejar-supportがエラーを出すので定義しておく
+const mockHeaders = { 'set-cookie': null };
 
 beforeEach(() => {
   client = new Kinnosuke('foo', 'bar', 'p@ssw0rd');
+  mock = new MockAdapter(client.http);
 });
 
 describe('#baseUrl', () => {
@@ -20,6 +25,43 @@ describe('#baseUrl', () => {
 
     test('指定した値が設定される', () => {
       expect(client.baseUrl).toBe('https://example.com');
+    });
+  });
+});
+
+describe('#login', () => {
+  describe('ログインしていないとき', () => {
+    test('ログインする', async () => {
+      expect.assertions(2);
+      mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
+
+      const response = await client.login();
+      expect(response.status).toBe(200);
+      expect(response.data).not.toMatch('id_passlogin');
+    });
+  });
+
+  describe('既にログインしているとき', () => {
+    test('問題なくログイン状態でレスポンスが返る', async () => {
+      expect.assertions(2);
+      mock.onPost('/').reply(200, '<div id="main_header_top">トップページ</div>', mockHeaders);
+
+      const firstTry = await client.login();
+      const retry = await client.login();
+      expect(retry.status).toBe(200);
+      expect(retry.data).not.toMatch('id_passlogin');
+    });
+  });
+
+  describe('ID・パスワードが正しくないとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock.onPost('/').reply(200, '<input type="submit" id="id_passlogin" name="Submit" value="ログイン">', mockHeaders);
+
+      const response = await client.login().catch(err => {
+        expect(err.name).toBe('Error');
+        expect(err.message).toBe('Incorrect login id or password');
+      });
     });
   });
 });
