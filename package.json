@@ -4,7 +4,8 @@
   "description": "Chrome extension for Kinnosuke",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint --fix --format codeframe src/**/*.js",
+    "lint": "eslint --format codeframe src/**/*.js",
+    "lint:fix": "eslint --fix --format codeframe src/**/*.js",
     "test": "jest"
   },
   "repository": {
