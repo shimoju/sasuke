@@ -1,7 +1,7 @@
 import axios from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
-import { JSDOM } from 'jsdom';
+// import { JSDOM } from 'jsdom';
 import { URLSearchParams } from 'url';
 
 export default class Kinnosuke {
