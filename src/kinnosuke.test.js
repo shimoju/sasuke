@@ -128,7 +128,7 @@ describe('#login', () => {
           mockHeaders
         );
 
-      const response = await client.login().catch(error => {
+      await client.login().catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Incorrect login id or password');
       });
