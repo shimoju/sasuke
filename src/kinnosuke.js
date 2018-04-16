@@ -28,9 +28,15 @@ export default class Kinnosuke {
       '/?module=timesheet&action=browse'
     );
     const doc = parseDOM(response.data);
-    const table = doc.getElementById('total_list0');
+    // 日次の勤怠データが入っているtableにはidがついていない
+    const dailyList = doc.getElementById('submit_form0');
+    const totalList = doc.getElementById('total_list0');
 
-    return table;
+    if (dailyList && totalList) {
+      return { daily: dailyList, total: totalList };
+    }
+
+    return Promise.reject(new Error('Unexpected element'));
   }
 
   async getWithLogin(path) {
