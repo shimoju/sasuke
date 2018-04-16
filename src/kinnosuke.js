@@ -5,7 +5,7 @@ import { URLSearchParams } from 'url';
 import { JSDOM } from 'jsdom';
 import TimeSheet from './time_sheet';
 
-const LOGIN_BUTTON_ID = 'id_passlogin';
+const LOGIN_BUTTON = 'id_passlogin';
 
 export default class Kinnosuke {
   constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
@@ -43,7 +43,7 @@ export default class Kinnosuke {
   async getWithLogin(path) {
     const firstTry = await this.http.get(path);
 
-    if (firstTry.data.includes(LOGIN_BUTTON_ID)) {
+    if (firstTry.data.includes(LOGIN_BUTTON)) {
       await this.login();
       const retry = await this.http.get(path);
 
@@ -54,16 +54,16 @@ export default class Kinnosuke {
   }
 
   async login() {
-    const response = await this.http.post('/', this.loginParams);
+    const response = await this.http.post('/', this.loginParams());
 
-    if (response.data.includes(LOGIN_BUTTON_ID)) {
+    if (response.data.includes(LOGIN_BUTTON)) {
       return Promise.reject(new Error('Incorrect login id or password'));
     }
 
     return response;
   }
 
-  get loginParams() {
+  loginParams() {
     const params = new URLSearchParams({
       module: 'login',
       y_companycd: this.companyId,
