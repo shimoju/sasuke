@@ -6,6 +6,8 @@ import { JSDOM } from 'jsdom';
 import TimeSheet from './time_sheet';
 
 const LOGIN_BUTTON = 'id_passlogin';
+const CLOCK_IN = '1';
+const CLOCK_OUT = '2';
 
 export default class Kinnosuke {
   constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
@@ -22,6 +24,32 @@ export default class Kinnosuke {
       withCredentials: true,
     });
     axiosCookieJarSupport(this.http);
+  }
+
+  async clockIn() {
+    const recorderPage = await this.login();
+    // IP制限チェック
+    // CSRFトークン取得
+    const csrfToken = { key: 'k', value: 'v' };
+    // CSRFトークンつけてPOST
+    const response = await this.http.post(
+      '/',
+      this.recorderParams(CLOCK_IN, csrfToken)
+    );
+
+    // レスポンス見て打刻時間がなかったら失敗判定？
+    // その他のエラー処理
+    // TimeRecorderを返す
+  }
+
+  async clockOut() {
+    const recorderPage = await this.login();
+
+    const csrfToken = { key: 'k', value: 'v' };
+    const response = await this.http.post(
+      '/',
+      this.recorderParams(CLOCK_OUT, csrfToken)
+    );
   }
 
   async getTimeSheet() {
@@ -70,6 +98,18 @@ export default class Kinnosuke {
       y_logincd: this.loginId,
       password: this.password,
     });
+
+    return params.toString();
+  }
+
+  recorderParams(recorderId, csrfToken) {
+    const params = new URLSearchParams({
+      module: 'timerecorder',
+      action: 'timerecorder',
+      scrollbody: '0',
+      timerecorder_stamping_type: recorderId,
+    });
+    params.append(csrfToken.key, csrfToken.value);
 
     return params.toString();
   }
