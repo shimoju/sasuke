@@ -48,9 +48,9 @@ export default class Kinnosuke {
       const retry = await this.http.get(path);
 
       return retry;
-    } else {
-      return firstTry;
     }
+
+    return firstTry;
   }
 
   async login() {
@@ -58,9 +58,9 @@ export default class Kinnosuke {
 
     if (response.data.includes(LOGIN_BUTTON_ID)) {
       return Promise.reject(new Error('Incorrect login id or password'));
-    } else {
-      return response;
     }
+
+    return response;
   }
 
   get loginParams() {
