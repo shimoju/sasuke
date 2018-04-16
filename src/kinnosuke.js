@@ -54,7 +54,7 @@ export default class Kinnosuke {
   }
 
   async login() {
-    const response = await this.http.post('/', this.loginParams);
+    const response = await this.http.post('/', this.loginParams());
 
     if (response.data.includes(LOGIN_BUTTON)) {
       return Promise.reject(new Error('Incorrect login id or password'));
@@ -63,7 +63,7 @@ export default class Kinnosuke {
     return response;
   }
 
-  get loginParams() {
+  loginParams() {
     const params = new URLSearchParams({
       module: 'login',
       y_companycd: this.companyId,
