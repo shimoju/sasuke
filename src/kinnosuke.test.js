@@ -11,10 +11,10 @@ beforeEach(() => {
   mock = new MockAdapter(client.http);
 });
 
-describe('#baseUrl', () => {
+describe('#baseURL', () => {
   describe('引数を省略したとき', () => {
     test('デフォルト値が設定される', () => {
-      expect(client.baseUrl).toBe('https://www.4628.jp');
+      expect(client.baseURL).toBe('https://www.4628.jp');
     });
   });
 
@@ -24,7 +24,7 @@ describe('#baseUrl', () => {
     });
 
     test('指定した値が設定される', () => {
-      expect(client.baseUrl).toBe('https://example.com');
+      expect(client.baseURL).toBe('https://example.com');
     });
   });
 });

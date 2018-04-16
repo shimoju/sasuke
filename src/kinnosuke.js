@@ -8,14 +8,14 @@ import TimeSheet from './time_sheet';
 const LOGIN_BUTTON_ID = 'id_passlogin';
 
 export default class Kinnosuke {
-  constructor(companyId, loginId, password, baseUrl = 'https://www.4628.jp') {
+  constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
     this.companyId = companyId;
     this.loginId = loginId;
     this.password = password;
-    this.baseUrl = baseUrl;
+    this.baseURL = baseURL;
     this.cookieJar = new tough.CookieJar();
     this.http = axios.create({
-      baseURL: this.baseUrl,
+      baseURL: this.baseURL,
       jar: this.cookieJar,
       responseType: 'document',
       timeout: 3000,
