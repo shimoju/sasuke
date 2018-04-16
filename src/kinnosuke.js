@@ -29,7 +29,7 @@ export default class Kinnosuke {
       '/?module=timesheet&action=browse'
     );
     const doc = parseDOM(response.data);
-    // 日次の勤怠データが入っているtableにはidがついていない
+    // 日次のデータが入っているtableにはidがついていないため、親要素を取得
     const dailyList = doc.getElementById('submit_form0');
     const totalList = doc.getElementById('total_list0');
 
