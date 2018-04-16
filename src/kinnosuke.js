@@ -27,7 +27,7 @@ export default class Kinnosuke {
     const response = await this.getWithLogin(
       '/?module=timesheet&action=browse'
     );
-    const doc = new JSDOM(response.data).window.document;
+    const doc = parseDOM(response.data);
     const table = doc.getElementById('total_list0');
 
     return table;
@@ -66,4 +66,8 @@ export default class Kinnosuke {
 
     return params.toString();
   }
+}
+
+function parseDOM(data) {
+  return new JSDOM(data).window.document;
 }
