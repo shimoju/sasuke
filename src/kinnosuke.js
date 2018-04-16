@@ -4,6 +4,8 @@ import tough from 'tough-cookie';
 // import { JSDOM } from 'jsdom';
 import { URLSearchParams } from 'url';
 
+const LOGIN_BUTTON_ID = 'id_passlogin';
+
 export default class Kinnosuke {
   constructor(companyId, loginId, password, baseUrl = 'https://www.4628.jp') {
     this.companyId = companyId;
@@ -23,9 +25,8 @@ export default class Kinnosuke {
 
   async getWithLogin(path) {
     const firstTry = await this.http.get(path);
-    const loginButtonId = 'id_passlogin';
 
-    if (firstTry.data.includes(loginButtonId)) {
+    if (firstTry.data.includes(LOGIN_BUTTON_ID)) {
       await this.login();
       const retry = await this.http.get(path);
 
@@ -36,17 +37,16 @@ export default class Kinnosuke {
   }
 
   async login() {
-    const response = await this.http.post('/', this.loginParams());
-    const loginButtonId = 'id_passlogin';
+    const response = await this.http.post('/', this.loginParams);
 
-    if (response.data.includes(loginButtonId)) {
+    if (response.data.includes(LOGIN_BUTTON_ID)) {
       return Promise.reject(new Error('Incorrect login id or password'));
     } else {
       return response;
     }
   }
 
-  loginParams() {
+  get loginParams() {
     const params = new URLSearchParams({
       module: 'login',
       y_companycd: this.companyId,
