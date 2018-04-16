@@ -1,8 +1,9 @@
 import axios from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
-// import { JSDOM } from 'jsdom';
 import { URLSearchParams } from 'url';
+import { JSDOM } from 'jsdom';
+import TimeSheet from './time_sheet';
 
 const LOGIN_BUTTON_ID = 'id_passlogin';
 
@@ -23,6 +24,22 @@ export default class Kinnosuke {
     axiosCookieJarSupport(this.http);
   }
 
+  async getTimeSheet() {
+    const response = await this.getWithLogin(
+      '/?module=timesheet&action=browse'
+    );
+    const doc = parseDOM(response.data);
+    // 日次のデータが入っているtableにはidがついていないため、親要素を取得
+    const dailyList = doc.getElementById('submit_form0');
+    const totalList = doc.getElementById('total_list0');
+
+    if (dailyList && totalList) {
+      return new TimeSheet(dailyList, totalList);
+    }
+
+    return Promise.reject(new Error('Unexpected element'));
+  }
+
   async getWithLogin(path) {
     const firstTry = await this.http.get(path);
 
@@ -31,9 +48,9 @@ export default class Kinnosuke {
       const retry = await this.http.get(path);
 
       return retry;
-    } else {
-      return firstTry;
     }
+
+    return firstTry;
   }
 
   async login() {
@@ -41,9 +58,9 @@ export default class Kinnosuke {
 
     if (response.data.includes(LOGIN_BUTTON_ID)) {
       return Promise.reject(new Error('Incorrect login id or password'));
-    } else {
-      return response;
     }
+
+    return response;
   }
 
   get loginParams() {
@@ -56,4 +73,8 @@ export default class Kinnosuke {
 
     return params.toString();
   }
+}
+
+function parseDOM(data) {
+  return new JSDOM(data).window.document;
 }
