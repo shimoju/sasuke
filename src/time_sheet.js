@@ -1,5 +1,6 @@
 export default class TimeSheet {
-  constructor(test) {
-    this.test = test;
+  constructor(daily, total) {
+    this.daily = daily;
+    this.total = total;
   }
 }

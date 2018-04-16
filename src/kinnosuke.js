@@ -3,6 +3,7 @@ import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
 import { URLSearchParams } from 'url';
 import { JSDOM } from 'jsdom';
+import TimeSheet from './time_sheet';
 
 const LOGIN_BUTTON_ID = 'id_passlogin';
 
@@ -33,7 +34,7 @@ export default class Kinnosuke {
     const totalList = doc.getElementById('total_list0');
 
     if (dailyList && totalList) {
-      return { daily: dailyList, total: totalList };
+      return new TimeSheet(dailyList, totalList);
     }
 
     return Promise.reject(new Error('Unexpected element'));

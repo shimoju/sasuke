@@ -3,11 +3,12 @@ import TimeSheet from './time_sheet';
 let timeSheet;
 
 beforeEach(() => {
-  timeSheet = new TimeSheet('foo');
+  timeSheet = new TimeSheet('daily', 'total');
 });
 
 describe('#test', () => {
   test('test', () => {
-    expect(timeSheet.test).toBe('foo');
+    expect(timeSheet.daily).toBe('daily');
+    expect(timeSheet.total).toBe('total');
   });
 });
