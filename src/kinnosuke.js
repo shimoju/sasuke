@@ -8,6 +8,8 @@ import TimeSheet from './time_sheet';
 const LOGIN_BUTTON = 'id_passlogin';
 const CLOCK_IN = '1';
 const CLOCK_OUT = '2';
+const GO_OUT = '3';
+const GO_BACK = '4';
 
 export default class Kinnosuke {
   constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
@@ -27,6 +29,22 @@ export default class Kinnosuke {
   }
 
   async clockIn() {
+    return await this.clock(CLOCK_IN);
+  }
+
+  async clockOut() {
+    return await this.clock(CLOCK_OUT);
+  }
+
+  async goOut() {
+    return await this.clock(GO_OUT);
+  }
+
+  async goBack() {
+    return await this.clock(GO_BACK);
+  }
+
+  async clock(clockType) {
     const recorderPage = await this.login();
     // IP制限チェック
     // CSRFトークン取得
@@ -34,22 +52,12 @@ export default class Kinnosuke {
     // CSRFトークンつけてPOST
     const response = await this.http.post(
       '/',
-      this.recorderParams(CLOCK_IN, csrfToken)
+      this.clockParams(clockType, csrfToken)
     );
 
     // レスポンス見て打刻時間がなかったら失敗判定？
     // その他のエラー処理
     // TimeRecorderを返す
-  }
-
-  async clockOut() {
-    const recorderPage = await this.login();
-
-    const csrfToken = { key: 'k', value: 'v' };
-    const response = await this.http.post(
-      '/',
-      this.recorderParams(CLOCK_OUT, csrfToken)
-    );
   }
 
   async getTimeSheet() {
@@ -102,12 +110,12 @@ export default class Kinnosuke {
     return params.toString();
   }
 
-  recorderParams(recorderId, csrfToken) {
+  clockParams(clockType, csrfToken) {
     const params = new URLSearchParams({
       module: 'timerecorder',
       action: 'timerecorder',
       scrollbody: '0',
-      timerecorder_stamping_type: recorderId,
+      timerecorder_stamping_type: clockType,
     });
     params.append(csrfToken.key, csrfToken.value);
 
