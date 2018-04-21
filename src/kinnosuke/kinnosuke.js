@@ -66,6 +66,7 @@ export default class Kinnosuke {
     const doc = parseDOM(response.data);
     const elements = doc.querySelectorAll('#timerecorder_txt');
 
+    // TODO: ここからだいぶ雑なのでどうにかする
     const recorder = {
       clockIn: null,
       clockOut: null,
@@ -73,6 +74,7 @@ export default class Kinnosuke {
       goBack: null,
     };
 
+    // TODO: 外出・戻りのキーワードを確認して実装する
     for (let element of elements) {
       const text = element.innerHTML;
       if (text.includes('出社')) {
@@ -82,6 +84,7 @@ export default class Kinnosuke {
       }
     }
 
+    // TODO: パースして適切なプロパティにしていく
     const timeRecorder = new TimeRecorder(
       recorder.clockIn,
       recorder.clockOut,
@@ -125,11 +128,12 @@ export default class Kinnosuke {
       '/?module=timesheet&action=browse'
     );
     const doc = parseDOM(response.data);
-    // 日次のデータが入っているtableにはidがついていないため、親要素を取得
+    // TODO: querySelector使う
     const dailyList = doc.getElementById('submit_form0');
     const totalList = doc.getElementById('total_list0');
 
     if (dailyList && totalList) {
+      // TODO: パースして適切なプロパティにしていく
       return new TimeSheet(dailyList, totalList);
     }
 

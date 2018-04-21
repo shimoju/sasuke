@@ -6,6 +6,7 @@ beforeEach(() => {
   timeRecorder = new TimeRecorder('clockIn', 'clockOut', 'goOut', 'goBack');
 });
 
+// TODO: きちんと実装するときに消す
 describe('#test', () => {
   test('test', () => {
     expect(timeRecorder.clockIn).toBe('clockIn');
