@@ -3,6 +3,7 @@ import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
 import { URLSearchParams } from 'url';
 import { JSDOM } from 'jsdom';
+import TimeRecorder from './time_recorder';
 import TimeSheet from './time_sheet';
 
 const CLOCK_IN = '1';
@@ -62,10 +63,31 @@ export default class Kinnosuke {
       this.clockParams(clockType, csrfToken)
     );
 
-    // レスポンス見て打刻時間がなかったら失敗判定？
-    // その他のエラー処理
-    // TimeRecorderを返す
-    return response;
+    const doc = parseDOM(response.data);
+    const elements = doc.querySelectorAll('#timerecorder_txt');
+
+    const recorder = {
+      clockIn: null,
+      clockOut: null,
+      goOut: null,
+      goBack: null,
+    };
+
+    for (let element of elements) {
+      const text = element.innerHTML;
+      if (text.includes('出社')) {
+        recorder.clockIn = text;
+      } else if (text.includes('退社')) {
+        recorder.clockOut = text;
+      }
+    }
+
+    return new TimeRecorder(
+      recorder.clockIn,
+      recorder.clockOut,
+      recorder.goOut,
+      recorder.goBack
+    );
   }
 
   async getTimeSheet() {

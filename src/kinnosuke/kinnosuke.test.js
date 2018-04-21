@@ -32,6 +32,29 @@ describe('#baseURL', () => {
 describe('#clock', () => {
   const clockIn = '1';
 
+  describe('正常に打刻できたとき', () => {
+    test('TimeRecorderを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__sectag_123456" value="abcdef">',
+          mockHeaders
+        )
+        .onPost('/')
+        .reply(
+          200,
+          '<td align="center" nowrap=""><div id="timerecorder_txt">出社<br>(10:00)</div></td><td align="center" nowrap=""><div id="timerecorder_txt">退社<br>(19:00)</div></td>',
+          mockHeaders
+        );
+
+      const recorder = await client.clock(clockIn);
+      expect(recorder.clockIn).toBe('出社<br>(10:00)');
+      expect(recorder.clockOut).toBe('退社<br>(19:00)');
+    });
+  });
+
   describe('IPアドレス制限のとき', () => {
     test('エラーを返す', async () => {
       expect.assertions(2);
