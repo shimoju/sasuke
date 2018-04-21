@@ -80,7 +80,7 @@ describe('#clock', () => {
         .onPost('/')
         .replyOnce(
           200,
-          '<input type="hidden" name="__unexpected_csrf_token_name" value="abcdef">',
+          '<input type="hidden" name="__unexpected_csrf_token" value="abcdef">',
           mockHeaders
         );
 
