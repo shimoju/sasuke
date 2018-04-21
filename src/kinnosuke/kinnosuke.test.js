@@ -90,6 +90,30 @@ describe('#clock', () => {
       });
     });
   });
+
+  describe('打刻した時刻がレスポンスに含まれていないとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__sectag_123456" value="abcdef">',
+          mockHeaders
+        )
+        .onPost('/')
+        .reply(
+          200,
+          '<td align="center" nowrap=""><div id="timerecorder_txt">出社<br>(10:00)</div></td>',
+          mockHeaders
+        );
+
+      await client.clock(clockOut).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('message');
+      });
+    });
+  });
 });
 
 describe('#getTimeSheet', () => {
