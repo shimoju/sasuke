@@ -45,12 +45,8 @@ export default class Kinnosuke {
   }
 
   async getTimeRecorder() {
-    const response = await this._login();
-
-    // IP制限のときは打刻していても時刻を取得できないため、エラーを返して区別する
-    if (response.data.includes(IP_ADDRESS_RESTRICTION)) {
-      return Promise.reject(new Error('Unauthorized IP address'));
-    }
+    // IP制限のときは打刻していても時刻を取得できないため、打刻と同様にエラーを返す
+    const response = await this._getTimeRecorderPage();
 
     return parseTimeRecorder(response.data);
   }
@@ -73,13 +69,9 @@ export default class Kinnosuke {
   }
 
   async _clock(clockType) {
-    const clockPage = await this._login();
+    const recorder = await this._getTimeRecorderPage();
 
-    if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
-      return Promise.reject(new Error('Unauthorized IP address'));
-    }
-
-    const csrfToken = scrapeCSRFToken(clockPage.data);
+    const csrfToken = scrapeCSRFToken(recorder.data);
     if (!csrfToken) {
       return Promise.reject(new Error('CSRF token not found'));
     }
@@ -121,6 +113,16 @@ export default class Kinnosuke {
     }
 
     return Promise.reject(new Error('Failed to clock'));
+  }
+
+  async _getTimeRecorderPage() {
+    const response = await this._login();
+
+    if (response.data.includes(IP_ADDRESS_RESTRICTION)) {
+      return Promise.reject(new Error('Unauthorized IP address'));
+    }
+
+    return response;
   }
 
   async _getWithLogin(path) {
