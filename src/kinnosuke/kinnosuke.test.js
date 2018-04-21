@@ -260,9 +260,9 @@ describe('#login', () => {
   });
 });
 
-describe('#loginParams', () => {
+describe('#_loginParams', () => {
   test('ログインに必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
-    expect(client.loginParams()).toBe(
+    expect(client._loginParams()).toBe(
       'module=login&y_companycd=foo&y_logincd=bar&password=p%40ssw0rd'
     );
   });
