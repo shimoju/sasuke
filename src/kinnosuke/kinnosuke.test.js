@@ -8,25 +8,7 @@ const mockHeaders = { 'set-cookie': null };
 
 beforeEach(() => {
   client = new Kinnosuke('foo', 'bar', 'p@ssw0rd');
-  mock = new MockAdapter(client.http);
-});
-
-describe('#baseURL', () => {
-  describe('引数を省略したとき', () => {
-    test('デフォルト値が設定される', () => {
-      expect(client.baseURL).toBe('https://www.4628.jp');
-    });
-  });
-
-  describe('引数を指定したとき', () => {
-    beforeEach(() => {
-      client = new Kinnosuke('foo', 'bar', 'p@ssw0rd', 'https://example.com');
-    });
-
-    test('指定した値が設定される', () => {
-      expect(client.baseURL).toBe('https://example.com');
-    });
-  });
+  mock = new MockAdapter(client._http);
 });
 
 describe('#clock', () => {
@@ -49,7 +31,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      const recorder = await client.clock(clockOut);
+      const recorder = await client._clock(clockOut);
       expect(recorder.clockIn).toBe('出社<br>(10:00)');
       expect(recorder.clockOut).toBe('退社<br>(19:00)');
     });
@@ -66,7 +48,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      await client.clock(clockOut).catch(error => {
+      await client._clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Unauthorized IP address');
       });
@@ -84,7 +66,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      await client.clock(clockOut).catch(error => {
+      await client._clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('CSRF token not found');
       });
@@ -108,7 +90,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      await client.clock(clockOut).catch(error => {
+      await client._clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Failed to clock');
       });
@@ -153,7 +135,7 @@ describe('#getTimeSheet', () => {
   });
 });
 
-describe('#getWithLogin', () => {
+describe('#_getWithLogin', () => {
   describe('ログインしていないとき', () => {
     test('ログインした上で指定されたパスのレスポンスを返す', async () => {
       expect.assertions(2);
@@ -177,7 +159,7 @@ describe('#getWithLogin', () => {
           mockHeaders
         );
 
-      const response = await client.getWithLogin(
+      const response = await client._getWithLogin(
         '/?module=timesheet&action=browse'
       );
       expect(response.status).toBe(200);
@@ -196,7 +178,7 @@ describe('#getWithLogin', () => {
           mockHeaders
         );
 
-      const response = await client.getWithLogin(
+      const response = await client._getWithLogin(
         '/?module=timesheet&action=browse'
       );
       expect(response.status).toBe(200);
@@ -217,7 +199,7 @@ describe('#login', () => {
           mockHeaders
         );
 
-      const response = await client.login();
+      const response = await client._login();
       expect(response.status).toBe(200);
       expect(response.data).not.toMatch('id_passlogin');
     });
@@ -234,8 +216,8 @@ describe('#login', () => {
           mockHeaders
         );
 
-      await client.login();
-      const retry = await client.login();
+      await client._login();
+      const retry = await client._login();
       expect(retry.status).toBe(200);
       expect(retry.data).not.toMatch('id_passlogin');
     });
@@ -252,7 +234,7 @@ describe('#login', () => {
           mockHeaders
         );
 
-      await client.login().catch(error => {
+      await client._login().catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Incorrect login id or password');
       });
@@ -260,20 +242,20 @@ describe('#login', () => {
   });
 });
 
-describe('#loginParams', () => {
+describe('#_loginParams', () => {
   test('ログインに必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
-    expect(client.loginParams()).toBe(
+    expect(client._loginParams()).toBe(
       'module=login&y_companycd=foo&y_logincd=bar&password=p%40ssw0rd'
     );
   });
 });
 
-describe('#clockParams', () => {
+describe('#_clockParams', () => {
   test('打刻に必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
     const clockType = '1';
     const csrfToken = { key: '__sectag_123456', value: 'abcdef' };
 
-    expect(client.clockParams(clockType, csrfToken)).toBe(
+    expect(client._clockParams(clockType, csrfToken)).toBe(
       'module=timerecorder&action=timerecorder&scrollbody=0&timerecorder_stamping_type=1&__sectag_123456=abcdef'
     );
   });

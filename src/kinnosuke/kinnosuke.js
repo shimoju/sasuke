@@ -18,36 +18,51 @@ export default class Kinnosuke {
     this.companyId = companyId;
     this.loginId = loginId;
     this.password = password;
-    this.baseURL = baseURL;
-    this.cookieJar = new tough.CookieJar();
-    this.http = axios.create({
-      baseURL: this.baseURL,
-      jar: this.cookieJar,
+    this._http = axios.create({
+      baseURL: baseURL,
+      jar: new tough.CookieJar(),
       responseType: 'document',
       timeout: 3000,
       withCredentials: true,
     });
-    axiosCookieJarSupport(this.http);
+    axiosCookieJarSupport(this._http);
   }
 
   async clockIn() {
-    return await this.clock(CLOCK_IN);
+    return await this._clock(CLOCK_IN);
   }
 
   async clockOut() {
-    return await this.clock(CLOCK_OUT);
+    return await this._clock(CLOCK_OUT);
   }
 
   async goOut() {
-    return await this.clock(GO_OUT);
+    return await this._clock(GO_OUT);
   }
 
   async goBack() {
-    return await this.clock(GO_BACK);
+    return await this._clock(GO_BACK);
   }
 
-  async clock(clockType) {
-    const clockPage = await this.login();
+  async getTimeSheet() {
+    const response = await this._getWithLogin(
+      '/?module=timesheet&action=browse'
+    );
+    const doc = parseDOM(response.data);
+    // TODO: querySelector使う
+    const dailyList = doc.getElementById('submit_form0');
+    const totalList = doc.getElementById('total_list0');
+
+    if (dailyList && totalList) {
+      // TODO: パースして適切なプロパティにしていく
+      return new TimeSheet(dailyList, totalList);
+    }
+
+    return Promise.reject(new Error('Unexpected element'));
+  }
+
+  async _clock(clockType) {
+    const clockPage = await this._login();
 
     if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
       return Promise.reject(new Error('Unauthorized IP address'));
@@ -58,9 +73,9 @@ export default class Kinnosuke {
       return Promise.reject(new Error('CSRF token not found'));
     }
 
-    const response = await this.http.post(
+    const response = await this._http.post(
       '/',
-      this.clockParams(clockType, csrfToken)
+      this._clockParams(clockType, csrfToken)
     );
 
     const doc = parseDOM(response.data);
@@ -123,29 +138,12 @@ export default class Kinnosuke {
     return Promise.reject(new Error('Failed to clock'));
   }
 
-  async getTimeSheet() {
-    const response = await this.getWithLogin(
-      '/?module=timesheet&action=browse'
-    );
-    const doc = parseDOM(response.data);
-    // TODO: querySelector使う
-    const dailyList = doc.getElementById('submit_form0');
-    const totalList = doc.getElementById('total_list0');
-
-    if (dailyList && totalList) {
-      // TODO: パースして適切なプロパティにしていく
-      return new TimeSheet(dailyList, totalList);
-    }
-
-    return Promise.reject(new Error('Unexpected element'));
-  }
-
-  async getWithLogin(path) {
-    const firstTry = await this.http.get(path);
+  async _getWithLogin(path) {
+    const firstTry = await this._http.get(path);
 
     if (firstTry.data.includes(LOGIN_BUTTON)) {
-      await this.login();
-      const retry = await this.http.get(path);
+      await this._login();
+      const retry = await this._http.get(path);
 
       return retry;
     }
@@ -153,8 +151,8 @@ export default class Kinnosuke {
     return firstTry;
   }
 
-  async login() {
-    const response = await this.http.post('/', this.loginParams());
+  async _login() {
+    const response = await this._http.post('/', this._loginParams());
 
     if (response.data.includes(LOGIN_BUTTON)) {
       return Promise.reject(new Error('Incorrect login id or password'));
@@ -163,7 +161,7 @@ export default class Kinnosuke {
     return response;
   }
 
-  loginParams() {
+  _loginParams() {
     const params = new URLSearchParams({
       module: 'login',
       y_companycd: this.companyId,
@@ -174,7 +172,7 @@ export default class Kinnosuke {
     return params.toString();
   }
 
-  clockParams(clockType, csrfToken) {
+  _clockParams(clockType, csrfToken) {
     const params = new URLSearchParams({
       module: 'timerecorder',
       action: 'timerecorder',
