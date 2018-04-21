@@ -29,6 +29,46 @@ describe('#baseURL', () => {
   });
 });
 
+describe('#clock', () => {
+  const clockIn = '1';
+
+  describe('IPアドレス制限のとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<div class="txt_12_red">IPアドレス制限により<br>タイムレコーダーは使用できません。</div>',
+          mockHeaders
+        );
+
+      await client.clock(clockIn).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Unauthorized IP address');
+      });
+    });
+  });
+
+  describe('CSRFトークンを取得できなかったとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__unexpected_csrf_token_name" value="abcdef">',
+          mockHeaders
+        );
+
+      await client.clock(clockIn).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('CSRF token not found');
+      });
+    });
+  });
+});
+
 describe('#getTimeSheet', () => {
   describe('期待したHTML要素が返ってきたとき', () => {
     test('パースしてTimeSheetを返す', async () => {
