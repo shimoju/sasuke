@@ -48,7 +48,7 @@ export default class Kinnosuke {
     const recorderPage = await this.login();
     // IP制限チェック
     // CSRFトークン取得
-    const csrfToken = { key: 'k', value: 'v' };
+    const csrfToken = scrapeCSRFToken(recorderPage.data);
     // CSRFトークンつけてPOST
     const response = await this.http.post(
       '/',
@@ -125,4 +125,14 @@ export default class Kinnosuke {
 
 function parseDOM(data) {
   return new JSDOM(data).window.document;
+}
+
+function scrapeCSRFToken(data) {
+  const result = data.match(/name="(__sectag_[\da-f]+)" value="([\da-f]+)"/);
+
+  if (result && result.length === 3) {
+    return { key: result[1], value: result[2] };
+  }
+
+  return null;
 }
