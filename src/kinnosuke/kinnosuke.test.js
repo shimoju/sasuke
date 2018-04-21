@@ -16,7 +16,7 @@ beforeEach(() => {
   mock = new MockAdapter(client._http);
 });
 
-describe('#clock', () => {
+describe('#_clock', () => {
   const clockOut = '2';
 
   describe('正常に打刻できたとき', () => {
@@ -192,7 +192,7 @@ describe('#_getWithLogin', () => {
   });
 });
 
-describe('#login', () => {
+describe('#_login', () => {
   describe('ログインしていないとき', () => {
     test('ログインする', async () => {
       expect.assertions(2);
