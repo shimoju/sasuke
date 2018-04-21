@@ -19,10 +19,9 @@ export default class Kinnosuke {
     this.loginId = loginId;
     this.password = password;
     this.baseURL = baseURL;
-    this.cookieJar = new tough.CookieJar();
     this.http = axios.create({
       baseURL: this.baseURL,
-      jar: this.cookieJar,
+      jar: new tough.CookieJar(),
       responseType: 'document',
       timeout: 3000,
       withCredentials: true,
