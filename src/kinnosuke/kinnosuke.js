@@ -124,7 +124,7 @@ export default class Kinnosuke {
   }
 
   async getTimeSheet() {
-    const response = await this.getWithLogin(
+    const response = await this._getWithLogin(
       '/?module=timesheet&action=browse'
     );
     const doc = parseDOM(response.data);
@@ -140,7 +140,7 @@ export default class Kinnosuke {
     return Promise.reject(new Error('Unexpected element'));
   }
 
-  async getWithLogin(path) {
+  async _getWithLogin(path) {
     const firstTry = await this.http.get(path);
 
     if (firstTry.data.includes(LOGIN_BUTTON)) {

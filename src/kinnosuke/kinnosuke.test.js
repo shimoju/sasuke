@@ -153,7 +153,7 @@ describe('#getTimeSheet', () => {
   });
 });
 
-describe('#getWithLogin', () => {
+describe('#_getWithLogin', () => {
   describe('ログインしていないとき', () => {
     test('ログインした上で指定されたパスのレスポンスを返す', async () => {
       expect.assertions(2);
@@ -177,7 +177,7 @@ describe('#getWithLogin', () => {
           mockHeaders
         );
 
-      const response = await client.getWithLogin(
+      const response = await client._getWithLogin(
         '/?module=timesheet&action=browse'
       );
       expect(response.status).toBe(200);
@@ -196,7 +196,7 @@ describe('#getWithLogin', () => {
           mockHeaders
         );
 
-      const response = await client.getWithLogin(
+      const response = await client._getWithLogin(
         '/?module=timesheet&action=browse'
       );
       expect(response.status).toBe(200);
