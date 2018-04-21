@@ -120,8 +120,8 @@ export default class Kinnosuke {
       action: 'timerecorder',
       scrollbody: '0',
       timerecorder_stamping_type: clockType,
+      [csrfToken.key]: csrfToken.value,
     });
-    params.append(csrfToken.key, csrfToken.value);
 
     return params.toString();
   }
