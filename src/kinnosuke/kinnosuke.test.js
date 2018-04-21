@@ -16,7 +16,44 @@ beforeEach(() => {
   mock = new MockAdapter(client._http);
 });
 
-describe('#clock', () => {
+describe('#getTimeSheet', () => {
+  describe('期待したHTML要素が返ってきたとき', () => {
+    test('パースしてTimeSheetを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onGet('/?module=timesheet&action=browse')
+        .reply(
+          200,
+          '<form name="submit_form0" id="submit_form0" action="./" method="post"></form><table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
+          mockHeaders
+        );
+
+      const timeSheet = await client.getTimeSheet();
+      expect(timeSheet.daily).toBeTruthy();
+      expect(timeSheet.total).toBeTruthy();
+    });
+  });
+
+  describe('期待していないHTML要素が返ってきたとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onGet('/?module=timesheet&action=browse')
+        .reply(
+          200,
+          '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
+          mockHeaders
+        );
+
+      await client.getTimeSheet().catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Unexpected element');
+      });
+    });
+  });
+});
+
+describe('#_clock', () => {
   const clockOut = '2';
 
   describe('正常に打刻できたとき', () => {
@@ -103,43 +140,6 @@ describe('#clock', () => {
   });
 });
 
-describe('#getTimeSheet', () => {
-  describe('期待したHTML要素が返ってきたとき', () => {
-    test('パースしてTimeSheetを返す', async () => {
-      expect.assertions(2);
-      mock
-        .onGet('/?module=timesheet&action=browse')
-        .reply(
-          200,
-          '<form name="submit_form0" id="submit_form0" action="./" method="post"></form><table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
-          mockHeaders
-        );
-
-      const timeSheet = await client.getTimeSheet();
-      expect(timeSheet.daily).toBeTruthy();
-      expect(timeSheet.total).toBeTruthy();
-    });
-  });
-
-  describe('期待していないHTML要素が返ってきたとき', () => {
-    test('エラーを返す', async () => {
-      expect.assertions(2);
-      mock
-        .onGet('/?module=timesheet&action=browse')
-        .reply(
-          200,
-          '<table border="0" cellpadding="3" cellspacing="1" class="txt_12" id="total_list0"></table>',
-          mockHeaders
-        );
-
-      await client.getTimeSheet().catch(error => {
-        expect(error.name).toBe('Error');
-        expect(error.message).toBe('Unexpected element');
-      });
-    });
-  });
-});
-
 describe('#_getWithLogin', () => {
   describe('ログインしていないとき', () => {
     test('ログインした上で指定されたパスのレスポンスを返す', async () => {
@@ -192,7 +192,7 @@ describe('#_getWithLogin', () => {
   });
 });
 
-describe('#login', () => {
+describe('#_login', () => {
   describe('ログインしていないとき', () => {
     test('ログインする', async () => {
       expect.assertions(2);
