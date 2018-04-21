@@ -11,7 +11,7 @@ const CLOCK_OUT = '2';
 const GO_OUT = '3';
 const GO_BACK = '4';
 const LOGIN_BUTTON = 'id_passlogin';
-const IP_RESTRICTION = 'IPアドレス制限により';
+const IP_ADDRESS_RESTRICTION = 'IPアドレス制限により';
 
 export default class Kinnosuke {
   constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
@@ -49,7 +49,7 @@ export default class Kinnosuke {
   async clock(clockType) {
     const clockPage = await this.login();
 
-    if (clockPage.data.includes(IP_RESTRICTION)) {
+    if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
       return Promise.reject(new Error('Unauthorized IP address'));
     }
 
