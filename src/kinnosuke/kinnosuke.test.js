@@ -16,6 +16,45 @@ beforeEach(() => {
   mock = new MockAdapter(client._http);
 });
 
+describe('#getTimeRecorder', () => {
+  describe('期待したHTML要素が返ってきたとき', () => {
+    test('TimeRecorderを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<td align="center" nowrap=""><div id="timerecorder_txt">出社<br>(10:00)</div></td><td align="center" nowrap=""><div id="timerecorder_txt">退社<br>(19:00)</div></td>',
+          mockHeaders
+        );
+
+      const recorder = await client.getTimeRecorder();
+      expect(recorder.clockIn).toBe('出社<br>(10:00)');
+      expect(recorder.clockOut).toBe('退社<br>(19:00)');
+      expect(recorder.goOut).toBeNull;
+      expect(recorder.goBack).toBeNull;
+    });
+  });
+
+  describe('IPアドレス制限のとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<div class="txt_12_red">IPアドレス制限により<br>タイムレコーダーは使用できません。</div>',
+          mockHeaders
+        );
+
+      await client.getTimeRecorder().catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Unauthorized IP address');
+      });
+    });
+  });
+});
+
 describe('#getTimeSheet', () => {
   describe('期待したHTML要素が返ってきたとき', () => {
     test('パースしてTimeSheetを返す', async () => {
@@ -76,6 +115,8 @@ describe('#_clock', () => {
       const recorder = await client._clock(clockOut);
       expect(recorder.clockIn).toBe('出社<br>(10:00)');
       expect(recorder.clockOut).toBe('退社<br>(19:00)');
+      expect(recorder.goOut).toBeNull;
+      expect(recorder.goBack).toBeNull;
     });
   });
 
