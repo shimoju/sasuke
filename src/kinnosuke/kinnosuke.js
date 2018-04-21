@@ -18,9 +18,8 @@ export default class Kinnosuke {
     this.companyId = companyId;
     this.loginId = loginId;
     this.password = password;
-    this.baseURL = baseURL;
     this.http = axios.create({
-      baseURL: this.baseURL,
+      baseURL: baseURL,
       jar: new tough.CookieJar(),
       responseType: 'document',
       timeout: 3000,

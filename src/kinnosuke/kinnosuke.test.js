@@ -11,24 +11,6 @@ beforeEach(() => {
   mock = new MockAdapter(client.http);
 });
 
-describe('#baseURL', () => {
-  describe('引数を省略したとき', () => {
-    test('デフォルト値が設定される', () => {
-      expect(client.baseURL).toBe('https://www.4628.jp');
-    });
-  });
-
-  describe('引数を指定したとき', () => {
-    beforeEach(() => {
-      client = new Kinnosuke('foo', 'bar', 'p@ssw0rd', 'https://example.com');
-    });
-
-    test('指定した値が設定される', () => {
-      expect(client.baseURL).toBe('https://example.com');
-    });
-  });
-});
-
 describe('#clock', () => {
   const clockOut = '2';
 
