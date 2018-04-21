@@ -31,22 +31,22 @@ export default class Kinnosuke {
   }
 
   async clockIn() {
-    return await this.clock(CLOCK_IN);
+    return await this._clock(CLOCK_IN);
   }
 
   async clockOut() {
-    return await this.clock(CLOCK_OUT);
+    return await this._clock(CLOCK_OUT);
   }
 
   async goOut() {
-    return await this.clock(GO_OUT);
+    return await this._clock(GO_OUT);
   }
 
   async goBack() {
-    return await this.clock(GO_BACK);
+    return await this._clock(GO_BACK);
   }
 
-  async clock(clockType) {
+  async _clock(clockType) {
     const clockPage = await this.login();
 
     if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
