@@ -29,6 +29,93 @@ describe('#baseURL', () => {
   });
 });
 
+describe('#clock', () => {
+  const clockOut = '2';
+
+  describe('正常に打刻できたとき', () => {
+    test('TimeRecorderを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__sectag_123456" value="abcdef">',
+          mockHeaders
+        )
+        .onPost('/')
+        .reply(
+          200,
+          '<td align="center" nowrap=""><div id="timerecorder_txt">出社<br>(10:00)</div></td><td align="center" nowrap=""><div id="timerecorder_txt">退社<br>(19:00)</div></td>',
+          mockHeaders
+        );
+
+      const recorder = await client.clock(clockOut);
+      expect(recorder.clockIn).toBe('出社<br>(10:00)');
+      expect(recorder.clockOut).toBe('退社<br>(19:00)');
+    });
+  });
+
+  describe('IPアドレス制限のとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<div class="txt_12_red">IPアドレス制限により<br>タイムレコーダーは使用できません。</div>',
+          mockHeaders
+        );
+
+      await client.clock(clockOut).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Unauthorized IP address');
+      });
+    });
+  });
+
+  describe('CSRFトークンを取得できなかったとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__unexpected_csrf_token" value="abcdef">',
+          mockHeaders
+        );
+
+      await client.clock(clockOut).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('CSRF token not found');
+      });
+    });
+  });
+
+  describe('打刻した時刻がレスポンスに含まれていないとき', () => {
+    test('エラーを返す', async () => {
+      expect.assertions(2);
+      mock
+        .onPost('/')
+        .replyOnce(
+          200,
+          '<input type="hidden" name="__sectag_123456" value="abcdef">',
+          mockHeaders
+        )
+        .onPost('/')
+        .reply(
+          200,
+          '<td align="center" nowrap=""><div id="timerecorder_txt">出社<br>(10:00)</div></td>',
+          mockHeaders
+        );
+
+      await client.clock(clockOut).catch(error => {
+        expect(error.name).toBe('Error');
+        expect(error.message).toBe('Failed to clock');
+      });
+    });
+  });
+});
+
 describe('#getTimeSheet', () => {
   describe('期待したHTML要素が返ってきたとき', () => {
     test('パースしてTimeSheetを返す', async () => {
@@ -177,6 +264,17 @@ describe('#loginParams', () => {
   test('ログインに必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
     expect(client.loginParams()).toBe(
       'module=login&y_companycd=foo&y_logincd=bar&password=p%40ssw0rd'
+    );
+  });
+});
+
+describe('#clockParams', () => {
+  test('打刻に必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
+    const clockType = '1';
+    const csrfToken = { key: '__sectag_123456', value: 'abcdef' };
+
+    expect(client.clockParams(clockType, csrfToken)).toBe(
+      'module=timerecorder&action=timerecorder&scrollbody=0&timerecorder_stamping_type=1&__sectag_123456=abcdef'
     );
   });
 });

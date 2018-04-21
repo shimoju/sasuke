@@ -6,6 +6,7 @@ beforeEach(() => {
   timeSheet = new TimeSheet('daily', 'total');
 });
 
+// TODO: きちんと実装するときに消す
 describe('#test', () => {
   test('test', () => {
     expect(timeSheet.daily).toBe('daily');
