@@ -47,7 +47,7 @@ export default class Kinnosuke {
   }
 
   async _clock(clockType) {
-    const clockPage = await this.login();
+    const clockPage = await this._login();
 
     if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
       return Promise.reject(new Error('Unauthorized IP address'));
@@ -144,7 +144,7 @@ export default class Kinnosuke {
     const firstTry = await this.http.get(path);
 
     if (firstTry.data.includes(LOGIN_BUTTON)) {
-      await this.login();
+      await this._login();
       const retry = await this.http.get(path);
 
       return retry;
@@ -153,7 +153,7 @@ export default class Kinnosuke {
     return firstTry;
   }
 
-  async login() {
+  async _login() {
     const response = await this.http.post('/', this._loginParams());
 
     if (response.data.includes(LOGIN_BUTTON)) {

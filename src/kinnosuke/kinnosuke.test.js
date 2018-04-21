@@ -217,7 +217,7 @@ describe('#login', () => {
           mockHeaders
         );
 
-      const response = await client.login();
+      const response = await client._login();
       expect(response.status).toBe(200);
       expect(response.data).not.toMatch('id_passlogin');
     });
@@ -234,8 +234,8 @@ describe('#login', () => {
           mockHeaders
         );
 
-      await client.login();
-      const retry = await client.login();
+      await client._login();
+      const retry = await client._login();
       expect(retry.status).toBe(200);
       expect(retry.data).not.toMatch('id_passlogin');
     });
@@ -252,7 +252,7 @@ describe('#login', () => {
           mockHeaders
         );
 
-      await client.login().catch(error => {
+      await client._login().catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Incorrect login id or password');
       });
