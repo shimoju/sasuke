@@ -30,7 +30,7 @@ describe('#baseURL', () => {
 });
 
 describe('#clock', () => {
-  const clockIn = '1';
+  const clockOut = '2';
 
   describe('正常に打刻できたとき', () => {
     test('TimeRecorderを返す', async () => {
@@ -49,7 +49,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      const recorder = await client.clock(clockIn);
+      const recorder = await client.clock(clockOut);
       expect(recorder.clockIn).toBe('出社<br>(10:00)');
       expect(recorder.clockOut).toBe('退社<br>(19:00)');
     });
@@ -66,7 +66,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      await client.clock(clockIn).catch(error => {
+      await client.clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('Unauthorized IP address');
       });
@@ -84,7 +84,7 @@ describe('#clock', () => {
           mockHeaders
         );
 
-      await client.clock(clockIn).catch(error => {
+      await client.clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
         expect(error.message).toBe('CSRF token not found');
       });
