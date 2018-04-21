@@ -46,6 +46,23 @@ export default class Kinnosuke {
     return await this._clock(GO_BACK);
   }
 
+  async getTimeSheet() {
+    const response = await this._getWithLogin(
+      '/?module=timesheet&action=browse'
+    );
+    const doc = parseDOM(response.data);
+    // TODO: querySelector使う
+    const dailyList = doc.getElementById('submit_form0');
+    const totalList = doc.getElementById('total_list0');
+
+    if (dailyList && totalList) {
+      // TODO: パースして適切なプロパティにしていく
+      return new TimeSheet(dailyList, totalList);
+    }
+
+    return Promise.reject(new Error('Unexpected element'));
+  }
+
   async _clock(clockType) {
     const clockPage = await this._login();
 
@@ -121,23 +138,6 @@ export default class Kinnosuke {
     }
 
     return Promise.reject(new Error('Failed to clock'));
-  }
-
-  async getTimeSheet() {
-    const response = await this._getWithLogin(
-      '/?module=timesheet&action=browse'
-    );
-    const doc = parseDOM(response.data);
-    // TODO: querySelector使う
-    const dailyList = doc.getElementById('submit_form0');
-    const totalList = doc.getElementById('total_list0');
-
-    if (dailyList && totalList) {
-      // TODO: パースして適切なプロパティにしていく
-      return new TimeSheet(dailyList, totalList);
-    }
-
-    return Promise.reject(new Error('Unexpected element'));
   }
 
   async _getWithLogin(path) {
