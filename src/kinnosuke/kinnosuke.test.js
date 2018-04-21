@@ -19,7 +19,7 @@ beforeEach(() => {
 describe('#getTimeRecorder', () => {
   describe('期待したHTML要素が返ってきたとき', () => {
     test('TimeRecorderを返す', async () => {
-      expect.assertions(2);
+      expect.assertions(4);
       mock
         .onPost('/')
         .replyOnce(
@@ -31,8 +31,8 @@ describe('#getTimeRecorder', () => {
       const recorder = await client.getTimeRecorder();
       expect(recorder.clockIn).toBe('出社<br>(10:00)');
       expect(recorder.clockOut).toBe('退社<br>(19:00)');
-      expect(recorder.goOut).toBeNull;
-      expect(recorder.goBack).toBeNull;
+      expect(recorder.goOut).toBe(null);
+      expect(recorder.goBack).toBe(null);
     });
   });
 
@@ -97,7 +97,7 @@ describe('#_clock', () => {
 
   describe('正常に打刻できたとき', () => {
     test('TimeRecorderを返す', async () => {
-      expect.assertions(2);
+      expect.assertions(4);
       mock
         .onPost('/')
         .replyOnce(
@@ -115,8 +115,8 @@ describe('#_clock', () => {
       const recorder = await client._clock(clockOut);
       expect(recorder.clockIn).toBe('出社<br>(10:00)');
       expect(recorder.clockOut).toBe('退社<br>(19:00)');
-      expect(recorder.goOut).toBeNull;
-      expect(recorder.goBack).toBeNull;
+      expect(recorder.goOut).toBe(null);
+      expect(recorder.goBack).toBe(null);
     });
   });
 
