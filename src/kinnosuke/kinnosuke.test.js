@@ -8,7 +8,7 @@ const mockHeaders = { 'set-cookie': null };
 
 beforeEach(() => {
   client = new Kinnosuke('foo', 'bar', 'p@ssw0rd');
-  mock = new MockAdapter(client.http);
+  mock = new MockAdapter(client._http);
 });
 
 describe('#clock', () => {

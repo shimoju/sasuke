@@ -18,14 +18,14 @@ export default class Kinnosuke {
     this.companyId = companyId;
     this.loginId = loginId;
     this.password = password;
-    this.http = axios.create({
+    this._http = axios.create({
       baseURL: baseURL,
       jar: new tough.CookieJar(),
       responseType: 'document',
       timeout: 3000,
       withCredentials: true,
     });
-    axiosCookieJarSupport(this.http);
+    axiosCookieJarSupport(this._http);
   }
 
   async clockIn() {
@@ -73,7 +73,7 @@ export default class Kinnosuke {
       return Promise.reject(new Error('CSRF token not found'));
     }
 
-    const response = await this.http.post(
+    const response = await this._http.post(
       '/',
       this._clockParams(clockType, csrfToken)
     );
@@ -139,11 +139,11 @@ export default class Kinnosuke {
   }
 
   async _getWithLogin(path) {
-    const firstTry = await this.http.get(path);
+    const firstTry = await this._http.get(path);
 
     if (firstTry.data.includes(LOGIN_BUTTON)) {
       await this._login();
-      const retry = await this.http.get(path);
+      const retry = await this._http.get(path);
 
       return retry;
     }
@@ -152,7 +152,7 @@ export default class Kinnosuke {
   }
 
   async _login() {
-    const response = await this.http.post('/', this._loginParams());
+    const response = await this._http.post('/', this._loginParams());
 
     if (response.data.includes(LOGIN_BUTTON)) {
       return Promise.reject(new Error('Incorrect login id or password'));
