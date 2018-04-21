@@ -82,12 +82,42 @@ export default class Kinnosuke {
       }
     }
 
-    return new TimeRecorder(
+    const timeRecorder = new TimeRecorder(
       recorder.clockIn,
       recorder.clockOut,
       recorder.goOut,
       recorder.goBack
     );
+
+    let clocked = false;
+    switch (clockType) {
+      case CLOCK_IN:
+        if (timeRecorder.clockIn) {
+          clocked = true;
+        }
+        break;
+      case CLOCK_OUT:
+        if (timeRecorder.clockOut) {
+          clocked = true;
+        }
+        break;
+      case GO_OUT:
+        if (timeRecorder.goOut) {
+          clocked = true;
+        }
+        break;
+      case GO_BACK:
+        if (timeRecorder.goBack) {
+          clocked = true;
+        }
+        break;
+    }
+
+    if (clocked) {
+      return timeRecorder;
+    }
+
+    return Promise.reject(new Error('Failed to clock'));
   }
 
   async getTimeSheet() {

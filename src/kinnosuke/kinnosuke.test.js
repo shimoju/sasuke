@@ -110,7 +110,7 @@ describe('#clock', () => {
 
       await client.clock(clockOut).catch(error => {
         expect(error.name).toBe('Error');
-        expect(error.message).toBe('message');
+        expect(error.message).toBe('Failed to clock');
       });
     });
   });
