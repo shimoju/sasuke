@@ -7,7 +7,12 @@ let mock;
 const mockHeaders = { 'set-cookie': null };
 
 beforeEach(() => {
-  client = new Kinnosuke('foo', 'bar', 'p@ssw0rd');
+  client = new Kinnosuke({
+    companyId: 'foo',
+    loginId: 'bar',
+    password: 'p@ssw0rd',
+  });
+
   mock = new MockAdapter(client._http);
 });
 

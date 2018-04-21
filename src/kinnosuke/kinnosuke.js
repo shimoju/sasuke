@@ -14,15 +14,15 @@ const LOGIN_BUTTON = 'id_passlogin';
 const IP_ADDRESS_RESTRICTION = 'IPアドレス制限により';
 
 export default class Kinnosuke {
-  constructor(companyId, loginId, password, baseURL = 'https://www.4628.jp') {
-    this.companyId = companyId;
-    this.loginId = loginId;
-    this.password = password;
+  constructor(options) {
+    this.companyId = options.companyId;
+    this.loginId = options.loginId;
+    this.password = options.password;
     this._http = axios.create({
-      baseURL: baseURL,
+      baseURL: options.baseURL || 'https://www.4628.jp',
       jar: new tough.CookieJar(),
       responseType: 'document',
-      timeout: 3000,
+      timeout: options.timeout || 3000,
       withCredentials: true,
     });
     axiosCookieJarSupport(this._http);
