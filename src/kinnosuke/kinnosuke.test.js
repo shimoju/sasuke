@@ -36,6 +36,19 @@ describe('#getTimeRecorder', () => {
     });
   });
 
+  describe('打刻していないとき', () => {
+    test('打刻時刻がすべてnullのTimeRecorderを返す', async () => {
+      expect.assertions(4);
+      mock.onPost('/').replyOnce(200, '<table></table>', mockHeaders);
+
+      const recorder = await client.getTimeRecorder();
+      expect(recorder.clockIn).toBe(null);
+      expect(recorder.clockOut).toBe(null);
+      expect(recorder.goOut).toBe(null);
+      expect(recorder.goBack).toBe(null);
+    });
+  });
+
   describe('IPアドレス制限のとき', () => {
     test('エラーを返す', async () => {
       expect.assertions(2);
