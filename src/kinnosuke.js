@@ -45,11 +45,15 @@ export default class Kinnosuke {
   }
 
   async clock(clockType) {
-    const recorderPage = await this.login();
+    const clockPage = await this.login();
+
     // IP制限チェック
-    // CSRFトークン取得
-    const csrfToken = scrapeCSRFToken(recorderPage.data);
-    // CSRFトークンつけてPOST
+
+    const csrfToken = scrapeCSRFToken(clockPage.data);
+    if (!csrfToken) {
+      return Promise.reject(new Error('CSRF token not found'));
+    }
+
     const response = await this.http.post(
       '/',
       this.clockParams(clockType, csrfToken)
