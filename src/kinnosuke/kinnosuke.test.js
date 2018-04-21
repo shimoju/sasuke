@@ -268,12 +268,12 @@ describe('#_loginParams', () => {
   });
 });
 
-describe('#clockParams', () => {
+describe('#_clockParams', () => {
   test('打刻に必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
     const clockType = '1';
     const csrfToken = { key: '__sectag_123456', value: 'abcdef' };
 
-    expect(client.clockParams(clockType, csrfToken)).toBe(
+    expect(client._clockParams(clockType, csrfToken)).toBe(
       'module=timerecorder&action=timerecorder&scrollbody=0&timerecorder_stamping_type=1&__sectag_123456=abcdef'
     );
   });

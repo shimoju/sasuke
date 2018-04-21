@@ -60,7 +60,7 @@ export default class Kinnosuke {
 
     const response = await this.http.post(
       '/',
-      this.clockParams(clockType, csrfToken)
+      this._clockParams(clockType, csrfToken)
     );
 
     const doc = parseDOM(response.data);
@@ -174,7 +174,7 @@ export default class Kinnosuke {
     return params.toString();
   }
 
-  clockParams(clockType, csrfToken) {
+  _clockParams(clockType, csrfToken) {
     const params = new URLSearchParams({
       module: 'timerecorder',
       action: 'timerecorder',
