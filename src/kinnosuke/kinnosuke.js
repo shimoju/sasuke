@@ -44,6 +44,17 @@ export default class Kinnosuke {
     return await this._clock(GO_BACK);
   }
 
+  async getTimeRecorder() {
+    const response = await this._login();
+
+    // IP制限のときは打刻していても時刻を取得できないため、エラーを返して区別する
+    if (response.data.includes(IP_ADDRESS_RESTRICTION)) {
+      return Promise.reject(new Error('Unauthorized IP address'));
+    }
+
+    return parseTimeRecorder(response.data);
+  }
+
   async getTimeSheet() {
     const response = await this._getWithLogin(
       '/?module=timesheet&action=browse'
@@ -78,35 +89,9 @@ export default class Kinnosuke {
       this._clockParams(clockType, csrfToken)
     );
 
-    const doc = parseDOM(response.data);
-    const elements = doc.querySelectorAll('#timerecorder_txt');
+    const timeRecorder = parseTimeRecorder(response.data);
 
-    // TODO: ここからだいぶ雑なのでどうにかする
-    const recorder = {
-      clockIn: null,
-      clockOut: null,
-      goOut: null,
-      goBack: null,
-    };
-
-    // TODO: 外出・戻りのキーワードを確認して実装する
-    for (let element of elements) {
-      const text = element.innerHTML;
-      if (text.includes('出社')) {
-        recorder.clockIn = text;
-      } else if (text.includes('退社')) {
-        recorder.clockOut = text;
-      }
-    }
-
-    // TODO: パースして適切なプロパティにしていく
-    const timeRecorder = new TimeRecorder(
-      recorder.clockIn,
-      recorder.clockOut,
-      recorder.goOut,
-      recorder.goBack
-    );
-
+    // TODO: 綺麗にしたい
     let clocked = false;
     switch (clockType) {
       case CLOCK_IN:
@@ -197,4 +182,35 @@ function scrapeCSRFToken(data) {
   }
 
   return null;
+}
+
+function parseTimeRecorder(data) {
+  const doc = parseDOM(data);
+  const elements = doc.querySelectorAll('#timerecorder_txt');
+
+  // TODO: 綺麗にしたい
+  const recorder = {
+    clockIn: null,
+    clockOut: null,
+    goOut: null,
+    goBack: null,
+  };
+
+  // TODO: 外出・戻りのキーワードを確認して実装する
+  for (let element of elements) {
+    const text = element.innerHTML;
+    if (text.includes('出社')) {
+      recorder.clockIn = text;
+    } else if (text.includes('退社')) {
+      recorder.clockOut = text;
+    }
+  }
+
+  // TODO: パースして適切なプロパティにしていく
+  return new TimeRecorder(
+    recorder.clockIn,
+    recorder.clockOut,
+    recorder.goOut,
+    recorder.goBack
+  );
 }
