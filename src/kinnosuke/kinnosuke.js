@@ -44,6 +44,13 @@ export default class Kinnosuke {
     return await this._clock(GO_BACK);
   }
 
+  async getTimeRecorder() {
+    // IP制限のときは打刻していても時刻を取得できないため、打刻と同様にエラーを返す
+    const response = await this._getTimeRecorderPage();
+
+    return parseTimeRecorder(response.data);
+  }
+
   async getTimeSheet() {
     const response = await this._getWithLogin(
       '/?module=timesheet&action=browse'
@@ -62,13 +69,9 @@ export default class Kinnosuke {
   }
 
   async _clock(clockType) {
-    const clockPage = await this._login();
+    const recorder = await this._getTimeRecorderPage();
 
-    if (clockPage.data.includes(IP_ADDRESS_RESTRICTION)) {
-      return Promise.reject(new Error('Unauthorized IP address'));
-    }
-
-    const csrfToken = scrapeCSRFToken(clockPage.data);
+    const csrfToken = parseCSRFToken(recorder.data);
     if (!csrfToken) {
       return Promise.reject(new Error('CSRF token not found'));
     }
@@ -78,35 +81,9 @@ export default class Kinnosuke {
       this._clockParams(clockType, csrfToken)
     );
 
-    const doc = parseDOM(response.data);
-    const elements = doc.querySelectorAll('#timerecorder_txt');
+    const timeRecorder = parseTimeRecorder(response.data);
 
-    // TODO: ここからだいぶ雑なのでどうにかする
-    const recorder = {
-      clockIn: null,
-      clockOut: null,
-      goOut: null,
-      goBack: null,
-    };
-
-    // TODO: 外出・戻りのキーワードを確認して実装する
-    for (let element of elements) {
-      const text = element.innerHTML;
-      if (text.includes('出社')) {
-        recorder.clockIn = text;
-      } else if (text.includes('退社')) {
-        recorder.clockOut = text;
-      }
-    }
-
-    // TODO: パースして適切なプロパティにしていく
-    const timeRecorder = new TimeRecorder(
-      recorder.clockIn,
-      recorder.clockOut,
-      recorder.goOut,
-      recorder.goBack
-    );
-
+    // TODO: 綺麗にしたい
     let clocked = false;
     switch (clockType) {
       case CLOCK_IN:
@@ -136,6 +113,16 @@ export default class Kinnosuke {
     }
 
     return Promise.reject(new Error('Failed to clock'));
+  }
+
+  async _getTimeRecorderPage() {
+    const response = await this._login();
+
+    if (response.data.includes(IP_ADDRESS_RESTRICTION)) {
+      return Promise.reject(new Error('Unauthorized IP address'));
+    }
+
+    return response;
   }
 
   async _getWithLogin(path) {
@@ -189,7 +176,7 @@ function parseDOM(data) {
   return new JSDOM(data).window.document;
 }
 
-function scrapeCSRFToken(data) {
+function parseCSRFToken(data) {
   const result = data.match(/name="(__sectag_[\da-f]+)" value="([\da-f]+)"/);
 
   if (result && result.length === 3) {
@@ -197,4 +184,35 @@ function scrapeCSRFToken(data) {
   }
 
   return null;
+}
+
+function parseTimeRecorder(data) {
+  const doc = parseDOM(data);
+  const elements = doc.querySelectorAll('#timerecorder_txt');
+
+  // TODO: 綺麗にしたい
+  const recorder = {
+    clockIn: null,
+    clockOut: null,
+    goOut: null,
+    goBack: null,
+  };
+
+  // TODO: 外出・戻りのキーワードを確認して実装する
+  for (let element of elements) {
+    const text = element.innerHTML;
+    if (text.includes('出社')) {
+      recorder.clockIn = text;
+    } else if (text.includes('退社')) {
+      recorder.clockOut = text;
+    }
+  }
+
+  // TODO: パースして適切なプロパティにしていく
+  return new TimeRecorder(
+    recorder.clockIn,
+    recorder.clockOut,
+    recorder.goOut,
+    recorder.goBack
+  );
 }
