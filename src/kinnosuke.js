@@ -62,6 +62,7 @@ export default class Kinnosuke {
     // レスポンス見て打刻時間がなかったら失敗判定？
     // その他のエラー処理
     // TimeRecorderを返す
+    return response;
   }
 
   async getTimeSheet() {
