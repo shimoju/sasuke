@@ -71,7 +71,7 @@ export default class Kinnosuke {
   async _clock(clockType) {
     const recorder = await this._getTimeRecorderPage();
 
-    const csrfToken = scrapeCSRFToken(recorder.data);
+    const csrfToken = parseCSRFToken(recorder.data);
     if (!csrfToken) {
       return Promise.reject(new Error('CSRF token not found'));
     }
@@ -176,7 +176,7 @@ function parseDOM(data) {
   return new JSDOM(data).window.document;
 }
 
-function scrapeCSRFToken(data) {
+function parseCSRFToken(data) {
   const result = data.match(/name="(__sectag_[\da-f]+)" value="([\da-f]+)"/);
 
   if (result && result.length === 3) {
