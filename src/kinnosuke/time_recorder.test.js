@@ -3,15 +3,23 @@ import TimeRecorder from './time_recorder';
 let timeRecorder;
 
 beforeEach(() => {
-  timeRecorder = new TimeRecorder('clockIn', 'clockOut', 'goOut', 'goBack');
+  timeRecorder = new TimeRecorder({
+    clockIn: '10:00',
+    clockOut: '19:00',
+    goOut: null,
+    goBack: null,
+  });
 });
 
-// TODO: きちんと実装するときに消す
-describe('#test', () => {
-  test('test', () => {
-    expect(timeRecorder.clockIn).toBe('clockIn');
-    expect(timeRecorder.clockOut).toBe('clockOut');
-    expect(timeRecorder.goOut).toBe('goOut');
-    expect(timeRecorder.goBack).toBe('goBack');
+describe('#constructor', () => {
+  describe('空のオブジェクトを渡したとき', () => {
+    test('打刻時刻がすべてnullのTimeRecorderを返す', () => {
+      timeRecorder = new TimeRecorder({});
+
+      expect(timeRecorder.clockIn).toBe(null);
+      expect(timeRecorder.clockOut).toBe(null);
+      expect(timeRecorder.goOut).toBe(null);
+      expect(timeRecorder.goBack).toBe(null);
+    });
   });
 });
