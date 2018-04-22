@@ -16,10 +16,10 @@ describe('#constructor', () => {
     test('打刻時刻がすべてnullのTimeRecorderを返す', () => {
       timeRecorder = new TimeRecorder({});
 
-      expect(timeRecorder.clockIn).toBe(null);
-      expect(timeRecorder.clockOut).toBe(null);
-      expect(timeRecorder.goOut).toBe(null);
-      expect(timeRecorder.goBack).toBe(null);
+      expect(timeRecorder.clockIn).toBeNull();
+      expect(timeRecorder.clockOut).toBeNull();
+      expect(timeRecorder.goOut).toBeNull();
+      expect(timeRecorder.goBack).toBeNull();
     });
   });
 });
