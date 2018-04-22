@@ -6,10 +6,10 @@ import { JSDOM } from 'jsdom';
 import TimeRecorder from './time_recorder';
 import TimeSheet from './time_sheet';
 
-const CLOCK_IN = '1';
-const CLOCK_OUT = '2';
-const GO_OUT = '3';
-const GO_BACK = '4';
+const CLOCK_IN = { id: '1', name: 'clockIn' };
+const CLOCK_OUT = { id: '2', name: 'clockOut' };
+const GO_OUT = { id: '3', name: 'goOut' };
+const GO_BACK = { id: '4', name: 'goBack' };
 const LOGIN_BUTTON = 'id_passlogin';
 const IP_ADDRESS_RESTRICTION = 'IPアドレス制限により';
 
@@ -83,32 +83,7 @@ export default class Kinnosuke {
 
     const timeRecorder = parseTimeRecorder(response.data);
 
-    // TODO: 綺麗にしたい
-    let clocked = false;
-    switch (clockType) {
-      case CLOCK_IN:
-        if (timeRecorder.clockIn) {
-          clocked = true;
-        }
-        break;
-      case CLOCK_OUT:
-        if (timeRecorder.clockOut) {
-          clocked = true;
-        }
-        break;
-      case GO_OUT:
-        if (timeRecorder.goOut) {
-          clocked = true;
-        }
-        break;
-      case GO_BACK:
-        if (timeRecorder.goBack) {
-          clocked = true;
-        }
-        break;
-    }
-
-    if (clocked) {
+    if (timeRecorder[clockType.name]) {
       return timeRecorder;
     }
 
@@ -164,7 +139,7 @@ export default class Kinnosuke {
       module: 'timerecorder',
       action: 'timerecorder',
       scrollbody: '0',
-      timerecorder_stamping_type: clockType,
+      timerecorder_stamping_type: clockType.id,
       [csrfToken.key]: csrfToken.value,
     });
 
