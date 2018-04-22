@@ -26,12 +26,12 @@
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
     "jest": "^22.4.3",
-    "prettier": "^1.12.0"
+    "prettier": "^1.12.1"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "axios-cookiejar-support": "^0.3.5",
-    "jsdom": "^11.7.0",
+    "jsdom": "^11.8.0",
     "tough-cookie": "^2.3.4"
   }
 }
