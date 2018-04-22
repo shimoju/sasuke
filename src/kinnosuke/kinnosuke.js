@@ -164,30 +164,24 @@ function parseCSRFToken(data) {
 function parseTimeRecorder(data) {
   const doc = parseDOM(data);
   const elements = doc.querySelectorAll('#timerecorder_txt');
-
-  // TODO: 綺麗にしたい
-  const recorder = {
-    clockIn: null,
-    clockOut: null,
-    goOut: null,
-    goBack: null,
-  };
+  const timeRecorder = new TimeRecorder({});
+  const timeRegExp = /\d\d:\d\d/;
 
   // TODO: 外出・戻りのキーワードを確認して実装する
   for (let element of elements) {
     const text = element.innerHTML;
     if (text.includes('出社')) {
-      recorder.clockIn = text;
+      const result = text.match(timeRegExp);
+      if (result) {
+        timeRecorder.clockIn = result[0];
+      }
     } else if (text.includes('退社')) {
-      recorder.clockOut = text;
+      const result = text.match(timeRegExp);
+      if (result) {
+        timeRecorder.clockOut = result[0];
+      }
     }
   }
 
-  // TODO: パースして適切なプロパティにしていく
-  return new TimeRecorder(
-    recorder.clockIn,
-    recorder.clockOut,
-    recorder.goOut,
-    recorder.goBack
-  );
+  return timeRecorder;
 }

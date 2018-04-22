@@ -29,8 +29,8 @@ describe('#getTimeRecorder', () => {
         );
 
       const recorder = await client.getTimeRecorder();
-      expect(recorder.clockIn).toBe('出社<br>(10:00)');
-      expect(recorder.clockOut).toBe('退社<br>(19:00)');
+      expect(recorder.clockIn).toBe('10:00');
+      expect(recorder.clockOut).toBe('19:00');
       expect(recorder.goOut).toBe(null);
       expect(recorder.goBack).toBe(null);
     });
@@ -126,8 +126,8 @@ describe('#_clock', () => {
         );
 
       const recorder = await client._clock(clockOut);
-      expect(recorder.clockIn).toBe('出社<br>(10:00)');
-      expect(recorder.clockOut).toBe('退社<br>(19:00)');
+      expect(recorder.clockIn).toBe('10:00');
+      expect(recorder.clockOut).toBe('19:00');
       expect(recorder.goOut).toBe(null);
       expect(recorder.goBack).toBe(null);
     });
