@@ -106,7 +106,7 @@ describe('#getTimeSheet', () => {
 });
 
 describe('#_clock', () => {
-  const clockOut = '2';
+  const clockOut = { id: '2', name: 'clockOut' };
 
   describe('正常に打刻できたとき', () => {
     test('TimeRecorderを返す', async () => {
@@ -311,7 +311,7 @@ describe('#_loginParams', () => {
 
 describe('#_clockParams', () => {
   test('打刻に必要なパラメータをapplication/x-www-form-urlencoded形式の文字列で返す', () => {
-    const clockType = '1';
+    const clockType = { id: '1', name: 'clockIn' };
     const csrfToken = { key: '__sectag_123456', value: 'abcdef' };
 
     expect(client._clockParams(clockType, csrfToken)).toBe(
