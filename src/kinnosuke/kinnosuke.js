@@ -165,15 +165,21 @@ function parseTimeRecorder(data) {
   const doc = parseDOM(data);
   const elements = doc.querySelectorAll('#timerecorder_txt');
   const timeRecorder = new TimeRecorder({});
+  const timeRegExp = /\d\d:\d\d/;
 
   // TODO: 外出・戻りのキーワードを確認して実装する
-  // TODO: パースして適切なプロパティにしていく
   for (let element of elements) {
     const text = element.innerHTML;
     if (text.includes('出社')) {
-      timeRecorder.clockIn = text;
+      const result = text.match(timeRegExp);
+      if (result) {
+        timeRecorder.clockIn = result[0];
+      }
     } else if (text.includes('退社')) {
-      timeRecorder.clockOut = text;
+      const result = text.match(timeRegExp);
+      if (result) {
+        timeRecorder.clockOut = result[0];
+      }
     }
   }
 
